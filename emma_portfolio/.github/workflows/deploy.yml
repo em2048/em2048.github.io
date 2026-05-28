@@ -1,0 +1,61 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # runs every time you push to main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      # 1. Download your code onto GitHub's build server
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Install Node.js (needed to run npm/pnpm)
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # 3. Install pnpm (the package manager your project uses)
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      # 4. Install all your project's dependencies (react, tailwind, etc.)
+      - name: Install dependencies
+        run: pnpm install
+
+      # 5. Compile your TSX files into plain HTML/JS/CSS
+      - name: Build
+        run: pnpm run build
+
+      # 6. Upload the compiled output so GitHub Pages can serve it
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'  # Vite puts compiled output in /dist
+
+      # 7. Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

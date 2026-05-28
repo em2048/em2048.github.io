@@ -1,0 +1,21 @@
+# Dependencies - these get reinstalled automatically, no need to upload
+node_modules/
+
+# Build output - GitHub Actions generates this, no need to upload
+dist/
+
+# Local environment files - never upload these (could contain secrets)
+.env
+.env.local
+.env.production
+
+# Editor files - not needed by anyone else
+.vscode/
+.idea/
+
+# OS junk files
+.DS_Store
+Thumbs.db
+
+# pnpm
+.pnpm-store/
